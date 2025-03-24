@@ -1,6 +1,36 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+class play{
+    public:
+    int player_val(int turn,int point, int flag, int prev_value, vector<int>board)
+    {
+        int val=0;
+        if(flag)
+        {
+            int new_val=prev_value+point;
+            if(new_val>100){
+                cout<<"Sorry, exced of 100. You can't move."<<endl<<endl;
+                cout<<"Player "<<turn<<", you are at position -----> "<<prev_value<<endl<<endl;
+                return prev_value;
+            }
+            if(board[new_val]!=0 && new_val<board[new_val])
+            {
+                cout<<"Congratulations, You get the ladder of _ "<<new_val<<endl;
+                new_val=board[new_val];
+            } 
+            else if(board[new_val]!=0 && new_val>board[new_val]){
+                cout<<"Opps!, You are bitten by the snake of _ "<<new_val<<endl;
+                new_val=board[new_val];
+            }
+            cout<<"Player "<<turn<<", you are at position -----> "<<new_val<<endl<<endl;
+            val=new_val;
+        }
+        return val;
+    }
+
+};
+
 int dice_value(){
     int mini=1;
     int maxi=6;
@@ -14,7 +44,9 @@ int dice_value(){
 int players()
 {
     int num;
-    cout<<"Enter how much players want to play the game(MAX 4 Player, MIN 2 Players)"<<endl;
+    cout<<"*************************************"<<endl;
+    cout<<"Enter how much players want to play \nthe game(MAX 10 Player, MIN 2 Players)"<<endl;
+    cout<<"*************************************"<<endl;
     cin>>num;
     return num;
 }
@@ -27,7 +59,7 @@ vector<int>snake_ladder(vector<int>&board)
     board[36]=44;
     board[51]=67;
     board[71]=91;
-    board[80]=98;
+    board[80]=97;
     board[98]=12;
     board[93]=73;
     board[95]=75;
@@ -41,113 +73,113 @@ vector<int>snake_ladder(vector<int>&board)
     board[50]=92;
 }
 
-int player_val(int turn,int point, int flag, int prev_value, vector<int>board)
-{
-    int val=0;
-    if(flag)
-    {
-        int new_val=prev_value+point;
-        if(new_val>100){
-            cout<<"Sorry, exced of 100. You can't move."<<endl<<endl;
-            cout<<"Player "<<turn<<", you are at position "<<prev_value<<endl<<endl;
-            return prev_value;
-        }
-        if(board[new_val]!=0 && new_val<board[new_val])
-        {
-            cout<<"Congratulations, You get the ladder of "<<new_val<<endl;
-            new_val=board[new_val];
-        } 
-        else if(board[new_val]!=0 && new_val>board[new_val]){
-            cout<<"Opps!, You are bitten by the snake of "<<new_val<<endl;
-            new_val=board[new_val];
-        }
-        cout<<"Player "<<turn<<", you are at position "<<new_val<<endl<<endl;
-        val=new_val;
-    }
-    return val;
-}
 
 int main()
 {
+    play p;
     vector<int>board(120,0);
     snake_ladder(board);
     int playersss=-1;
     int count=0;
 
-    int player_one=0, flag1=0;
-    int player_two=0, flag2=0;
-    int player_three=0, flag3=0;
-    int player_four=0, flag4=0;
-    cout<<"_____ WELCOME TO SNAKE LADDER GAME_____"<<endl<<endl<<endl;
+    vector<int>player(10,0);
+    vector<int>flag(10,0);
+    vector<int>rankTable(10,0);
+    int hundreds=0;
+    int rank=0;
+
+    cout<<"************************************"<<endl;
+    cout<<"   WELCOME TO SNAKES LADDERS GAME   "<<endl;
+    cout<<"************************************"<<endl;
+
+
     
-    while(playersss<2 || playersss>4)
+    while(playersss<2 || playersss>10)                           
     {
         if(playersss==-1){
             playersss = players();
         }
         else{
-            cout<<"You enter the wrong key"<<endl;
+            cout<<"You enter the wrong number."<<endl;
             playersss = players();
         }
     }
 
-    while(player_four<100 && player_three<100 && player_two<100 && player_one<100)
+
+
+
+    while(hundreds<playersss-1)                                
     {
         int point=0;
         int dice_val;
         int role=0;
         int one_count=0;
         int turn=(count%playersss)+1;
-        cout<<"Turn of player "<<turn<<endl;
-        // cout<<"Player "<<turn<<" enter 1 for role the dice."<<endl;
+
+        if(player[turn]==100){
+            count++; 
+            continue;
+        }
+
+        cout<<"Turn of player_"<<turn<<endl;
         cin>>role;
         if(role)
         {
             dice_val=dice_value();
-            cout<<"your dice value is "<<dice_val<<endl<<endl;
+            cout<<"your dice value is > "<<dice_val<<endl<<endl;
         }
-        while(dice_val==1 && one_count<3)
+
+
+        while(dice_val==1 && one_count<3 && player[turn]<100)
         {
             one_count++;
+            if(player[turn]>=98){
+                player[turn]+=1;
+            }
+            if(player[turn]==100){
+                cout<<"Player "<<turn<<", you are at position -----> "<<player[turn]<<endl<<endl;
+                dice_val=0;
+                break;
+            }
             cout<<"Player "<<turn<<" enter 1 for once again to role the dice."<<endl;
             cin>>role;
             if(role)
             {
-                dice_val=dice_value();
-                cout<<"your dice value is "<<dice_val<<endl<<endl;
+                dice_val=dice_value();   
+                cout<<"your dice value is > "<<dice_val<<endl<<endl;
             }
             
         }
+
+
         if(one_count>0 && one_count<3){
+            if(player[turn]+dice_val>100){
+                player[turn]-=one_count;
+            }
             point=one_count+dice_val;
-            if(turn==1) flag1=1;
-            else if(turn==2) flag2=1;
-            else if(turn==3) flag3=1;
-            else if(turn==4) flag4=1;
+            flag[turn]=1;                           
         }
         else{
             point=dice_val;
         }
-        if(turn==1){
-            player_one=player_val(turn,point,flag1,player_one,board);
+
+
+        if(player[turn] != 100){
+            player[turn] = p.player_val(turn,point,flag[turn],player[turn],board);
         }
-        else if(turn==2){
-            player_two=player_val(turn,point,flag2,player_two,board);
-        }
-        else if(turn==3){
-            player_three=player_val(turn,point,flag3,player_three,board);
-        }
-        else{
-            player_four=player_val(turn,point,flag4,player_four,board);
+        if(player[turn]==100){
+            rankTable[rank]=turn;
+            rank++;
+            hundreds++;
         }
         count++;
     }
-    if(player_one==100) cout<<"Congratulation player 1 own the game."<<endl;
-    else if(player_two==100) cout<<"Congratulation player 2 own the game."<<endl;
-    else if(player_three==100) cout<<"Congratulation player 3 own the game."<<endl;
-    else{
-        cout<<"Congratulation player 4 own the game."<<endl;
+    
+    cout<<"***********************************"<<endl;
+    for(int i=0;i<playersss-1;i++){
+        cout<<"Congratulation player "<<rankTable[i]<<" became no "<<i+1 <<endl;
     }
+    cout<<"***********************************"<<endl;
 
 
     return 0;
